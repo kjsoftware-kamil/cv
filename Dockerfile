@@ -29,6 +29,7 @@ COPY . .
 # Install dependencies
 RUN composer install --no-dev --no-interaction --optimize-autoloader
 
+COPY .env .env
 
 ############################
 # 2️⃣ Final runtime stage
