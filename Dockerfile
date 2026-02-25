@@ -81,5 +81,13 @@ RUN rm -f bootstrap/cache/config.php \
 
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
+# Create SQLite database and set permissions
+RUN mkdir -p database && \
+    touch database/database.sqlite && \
+    chown -R www-data:www-data database && \
+    chmod -R 775 database
+
+# Run migrations
+RUN php artisan migrate --force
 
 USER www-data
