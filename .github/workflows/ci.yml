@@ -1,0 +1,54 @@
+name: Laravel CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t laravel-app .
+
+      - name: Run container
+        run: |
+          docker run -d \
+            --name laravel-app \
+            -e APP_ENV=testing \
+            -e APP_KEY=base64:$(openssl rand -base64 32) \
+            -e DB_CONNECTION=sqlite \
+            -e DB_DATABASE=/var/www/html/database/database.sqlite \
+            -p 8080:80 \
+            laravel-app
+
+      - name: Wait for container to be ready
+        run: sleep 5
+
+      - name: Create SQLite database
+        run: |
+          docker exec --user root laravel-app touch /var/www/html/database/database.sqlite
+          docker exec --user root laravel-app chown www-data:www-data /var/www/html/database/database.sqlite
+
+      - name: Run migrations
+        run: |
+          docker exec laravel-app php artisan migrate --force
+
+      - name: Run tests
+        run: |
+          docker exec laravel-app php artisan test
+
+      - name: Stop container
+        run: docker rm -f laravel-app
