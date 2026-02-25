@@ -51,7 +51,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker exec laravel-app php artisan test
+          docker exec laravel-app ./vendor/bin/phpunit
 
       - name: Stop container
         run: docker rm -f laravel-app
