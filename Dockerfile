@@ -73,14 +73,12 @@ COPY --from=deps /app/vendor ./vendor
 # Copy application files
 COPY . .
 
-# Clear cached config/packages and re-discover for --no-dev
-RUN rm -f bootstrap/cache/config.php \
-    bootstrap/cache/packages.php \
-    bootstrap/cache/services.php \
-    && php artisan package:discover --ansi
+# Copy .env file
+COPY .env .env
 
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
+
 # Create SQLite database and set permissions
 RUN mkdir -p database && \
     touch database/database.sqlite && \
