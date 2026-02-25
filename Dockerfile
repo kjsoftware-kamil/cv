@@ -24,12 +24,15 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy project files
-COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --no-interaction --optimize-autoloader
 
+# Copy project files
+COPY . .
+# Copy .env file
 COPY .env .env
+# Install dependencies
+RUN composer install --no-dev --no-interaction --optimize-autoloader
 
 ############################
 # 2️⃣ Final runtime stage
