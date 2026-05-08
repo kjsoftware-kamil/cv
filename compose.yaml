@@ -13,7 +13,7 @@ services:
       context: .
     ports:
       - 8000:80
-          volumes:
+    volumes:
       - ./:/var/www/html
       - database_volume:/var/www/html/database
 
